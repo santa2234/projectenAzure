@@ -1,0 +1,17 @@
+# roles/dhcp/tasks/main.yml
+---
+- name: Install ipv6config file
+  template:
+    src: dhcpd6.conf.j2
+    dest: /etc/dhcp/dhcpd6.conf
+    owner: vagrant
+    group: wheel
+  notify: restart dhcpd6
+  tags: dhcpd6
+
+- name: Ensure dhcpd6 is started
+  service:
+    name: dhcpd6
+    state: started
+    enabled: true
+  tags: dhcpd6

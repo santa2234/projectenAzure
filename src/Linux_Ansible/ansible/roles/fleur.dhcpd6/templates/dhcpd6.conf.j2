@@ -1,0 +1,13 @@
+#
+# DHCPv6 Server Configuration file.
+#   see /usr/share/doc/dhcp-server/dhcpd6.conf.example
+#   see dhcpd.conf(5) man page
+# {Added by ansible}
+
+{% for subnet in dhcp6_subnets %}
+subnet6 {{ subnet.ip6 }} {
+{% if subnet.range_begin is defined and subnet.range_end is defined %}
+  range6 {{ subnet.range_begin }} {{ subnet.range_end }};
+{% endif %}
+}
+{% endfor %}

@@ -1,0 +1,7 @@
+﻿Name;Surname;GivenName;SamAccountName;UserPrincipalName;Path;Groups;AllowedPCs
+Bieseman Arne;Bieseman;Arne;arneb;arneb@corona2020.local;"OU=""IT Administratie"",OU=CoronaAfdeling,DC=CORONA2020,DC=local";IT Administratie;PC1-IT-Admin
+Coppens Maxime;Coppens;Maxime;maximec;maximec@corona2020.local;"OU=""Verkoop"",OU=CoronaAfdeling,DC=CORONA2020,DC=local";Verkoop;PC1-Verkoop
+Hurckmans Alex;Hurckmans;Alex;alexh;alexh@corona2020.local;"OU=""Directie"",OU=CoronaAfdeling,DC=CORONA2020,DC=local";Directie;PC1-Administratie
+Meremans Santi;Meremans;Santi;santim;santim@corona2020.local;"OU=""Ontwikkeling"",OU=CoronaAfdeling,DC=CORONA2020,DC=local";Ontwikkeling;PC1-Ontwikkeling
+Pattyn Fleur;Pattyn;Fleur;fleurp;fleurp@corona2020.local;"OU=""Administratie"",OU=CoronaAfdeling,DC=CORONA2020,DC=local";Administratie;PC1-Directie
+Sakkoul Lana;Sakkoul;Lana;lanas;lanas@corona2020.local;"OU=""IT Administratie"",OU=CoronaAfdeling,DC=CORONA2020,DC=local";IT Administratie;PC1-IT-Admin

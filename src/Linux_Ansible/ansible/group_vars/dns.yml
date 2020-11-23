@@ -1,0 +1,64 @@
+# group_vars/dns.yml
+# Variables visible to machines part of group dns. See vagrant-groups.yml
+---
+ipv6: fe80:0000:0000:0002::0003/64
+connection: "System eth1"
+## Allow DNS to pass through the firewall
+rhbase_firewall_allow_services:
+  - dns
+
+bind_allow_query:
+  - any
+bind_listen_ipv4:
+  - any
+bind_listen_ipv6:
+  - any
+bind_zones:
+  # Example of a primary zone (hosts: and name_servers: ares defined)
+  - name: corona2020.local
+    primaries:
+      - 192.0.2.1               # Primary server(s) for this zone
+    networks:
+      - 192.0.2
+    ipv6_networks:
+      - 2001:db9::/48
+    name_servers:
+      - bravo.corona2020.local.
+    bind_allow_query:
+      - any
+    bind_listen_ipv4:
+      - any
+    bind_listen_ipv6:
+      - any
+    hosts:
+      - name: bravo
+        ip: 192.0.2.1
+        ipv6: 2001:db9::1
+        aliases:
+          - ns1
+          - dns
+      - name: '@'
+        ip: 192.0.2.2
+        ipv6: 2001:db9::2
+        aliases:
+          - charlie
+          - webserver
+          - www
+      - name: delta
+        ip:
+          - 192.0.2.3
+        ipv6:
+          - 2001:db9::3
+        aliases:
+          - mail-in
+      - name: alfa
+        ip: 192.0.2.4
+        ipv6: 2001:db9::4
+        aliases:
+          - domain-controller
+    forwarders:
+      - 8.8.8.8
+      - 8.8.4.4
+    mail_servers:
+     - name: delta
+       preference: 10

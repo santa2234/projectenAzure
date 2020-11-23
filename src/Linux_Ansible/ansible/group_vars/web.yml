@@ -1,0 +1,77 @@
+---
+ipv6: fe80:0000:0000:0002::0002/64
+connection: "System eth1"
+rhbase_install_packages:
+  - nginx
+  - epel-release
+  - mod_ssl
+  - openssl
+  - bash-completion
+  - bind
+  - bind-utils
+  - git
+  - nano
+  - tree
+  - vim-enhanced
+  - wget
+  - postgresql-server
+  - postgresql-contrib
+  - php
+  - php-fpm
+  - php-pgsql
+  - php-mysqlnd
+  - php-cli
+  - php-zip
+  - php-devel
+  - php-gd
+  - php-mbstring
+  - php-curl
+  - php-xml
+  - php-pear
+  - php-bcmath
+  - php-json
+
+rhbase_start_services:
+  - nginx
+#  - postgresql
+rhbase_systemd_services:
+  - nginx
+
+rhbase_firewall_allow_services:
+  - http
+  - https
+config_virtualhost_webserver: /var/www/corona2002.local
+rhbase_firewall_allow_ports:
+  - '80/tcp'
+  - '443/tcp'
+  - '5432/tcp'
+
+pgsql_databases:
+  - name: drupal
+    owner: santi
+
+http_host: corona2002.local
+pgsql_users:
+  - name: santi
+    password: santi
+    db: drupal
+
+http_host: corona2002.local
+#httpd configuratie
+httpd_ssl_certificate_file: 'ca.crt'
+httpd_ssl_certificate_key_file: 'ca.key'
+mariadb_databases: 'wp_db'
+mariadb_users: 'santi'
+mariadb_packages:
+  - mariadb-server
+rhbase_users:
+  - name: santi
+    comment: 'Santi Meremans'
+    groups:
+      - users
+      - wheel
+      - devs
+    password: '$6$santi$n.84qYwyGu5o81mWMiwJp93A5BS3yzHggeEgNTOw2DgvAjI7RjGdtsUplYGE94.C5RJxmncZ9MZykgeYOOndk1'
+    ssh-key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCmz5S+F7o3/ecxZn6A3cMsFh9cnLNAcEOHoEGdoquwq5iklfk9XrGdeCI5+dfbu+N6yeex5viCgaB3+QFk2jIQaCHaa4ujlivF6DxiPuR57OJV1lAIoHQQKcLiFtaY0qAh5d0GHuTR2o6OJerRB0KElhJJEVKgc6THCScN/zUk9yff+XH9pdihbp5920FxZ5KlgR/KzueUUAT6Jqtd9SfbmLlczK8QaaxQmi1mIlQyXoijvGR3/D6D6RVgooEnilBf2eV/mPgcAHXPTRbhPjYZp9GI4E3SmrPjBYQ1VyC/Q1S3roxkMC4+eCE1IoJRVwEKWbJ+DMc2wqvfgkf3VK1/ON7Q2WwT7fJeQ8XBeEpW+rO/Yme1x7SwNG7rerthiVWgyRxMH6RxHe5MgDfc/Rd3WvKgHXSW+4zBKnjPqbY6OwuwTlUBVRidhQXVnQncm6pBIqOK1H7sEmr5kNAIcofZmWfqsjj/1UNXTK9DRfhrSxzMuZ0quD3HlpmTUjGaabmMR7P7qvGqSDXyjYFbIcG14k722yVc6neb9UyexSNUtpQiBWYzHwNmQ9dj8Ykh3Hls0fnmtC7XRCGOYNvP6Rt9ShH+OH8v1wT7xfDvXd7Yj7cX3rOzE3hie8f52pl7CbBBWugx6rm0F4Ge5E8IHq3ZkfpWsUNyI5yl/AANYVv/BQ== santi@LAPTOP-AAU6BJIE
+
+#DRUPAL_VERSION: '9.0.7.tar.gz'

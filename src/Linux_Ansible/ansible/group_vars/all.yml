@@ -1,0 +1,20 @@
+# group_vars/all.yml
+# Variables visible to all nodes
+---
+
+rhbase_selinux_state: enforcing
+
+## Installe EPEL repository
+rhbase_repositories:
+  - epel-release
+
+## Installe packages 
+rhbase_install_packages:
+  - bash-completion
+  - bind-utils
+  - git
+  - nano
+  - tree
+  - vim-enhanced
+  - wget
+  

@@ -1,0 +1,6 @@
+﻿ComputerName;SamAccountName;Path
+PC1-IT-Admin;PC1-IT-Admin;"OU=IT Administratie,OU=CoronaAfdeling"
+PC1-Verkoop;PC1-Verkoop;"OU=Verkoop,OU=CoronaAfdeling"
+PC1-Administratie;PC1-Administratie;"OU=Administratie,OU=CoronaAfdeling"
+PC1-Ontwikkeling;PC1-Ontwikkeling;"OU=Ontwikkeling,OU=CoronaAfdeling"
+PC1-Directie;PC1-Directie;"OU=Directie,OU=CoronaAfdeling"

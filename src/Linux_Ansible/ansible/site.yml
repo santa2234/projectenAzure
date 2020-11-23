@@ -1,0 +1,26 @@
+# site.yml
+---
+- hosts: all
+  roles:
+    - fleur.setips
+- hosts: bravo
+  become: true
+  roles:
+    - ansible-role-bind
+- hosts: charlie
+  become: true
+  roles:
+    - ansible-role-rh-base
+    - ansible-role-postgresql
+# deze rol kan je vinden op https://github.com/CentOS/ansible-role-postgresql
+- hosts: delta
+  become: true
+  roles:
+    - bertvv.rh-base
+    - bertvv.mailserver
+- hosts: foxtrot
+  become: true
+  roles:
+    - bertvv.rh-base
+    - bertvv.dhcp
+    - fleur.dhcpd6

@@ -1,0 +1,38 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Create virtual network
+      azure_rm_virtualnetwork:
+        resource_group: myResourceGroup
+        name: myVnet
+        address_prefixes: "10.0.0.0/16"
+    - name: Add subnet
+      azure_rm_subnet:
+          resource_group: myResourceGroup
+          name: mySubnet
+          address_prefix: "10.0.1.0/24"
+          virtual_network: myVnet
+    - name: Create virtual network interface card
+      azure_rm_networkinterface:
+        resource_group: myResourceGroup
+        name: myNIC
+        virtual_network: myVnet
+        subnet: mySubnet
+        public_ip_name: myPublicIP
+    - name: Create VM
+      azure_rm_virtualmachine:
+        resource_group: myResourceGroup
+        name: myVM
+        vm_size: Standard_DS1_v2
+        admin_username: azureuser
+        ssh_password_enabled: false
+        ssh_public_keys: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCmz5S+F7o3/ecxZn6A3cMsFh9cnLNAcEOHoEGdoquwq5iklfk9XrGdeCI5+dfbu+N6yeex5viCgaB3+QFk2jIQaCHaa4ujlivF6DxiPuR57OJV1lAIoHQQKcLiFtaY0qAh5d0GHuTR2o6OJerRB0KElhJJEVKgc6THCScN/zUk9yff+XH9pdihbp5920FxZ5KlgR/KzueUUAT6Jqtd9SfbmLlczK8QaaxQmi1mIlQyXoijvGR3/D6D6RVgooEnilBf2eV/mPgcAHXPTRbhPjYZp9GI4E3SmrPjBYQ1VyC/Q1S3roxkMC4+eCE1IoJRVwEKWbJ+DMc2wqvfgkf3VK1/ON7Q2WwT7fJeQ8XBeEpW+rO/Yme1x7SwNG7rerthiVWgyRxMH6RxHe5MgDfc/Rd3WvKgHXSW+4zBKnjPqbY6OwuwTlUBVRidhQXVnQncm6pBIqOK1H7sEmr5kNAIcofZmWfqsjj/1UNXTK9DRfhrSxzMuZ0quD3HlpmTUjGaabmMR7P7qvGqSDXyjYFbIcG14k722yVc6neb9UyexSNUtpQiBWYzHwNmQ9dj8Ykh3Hls0fnmtC7XRCGOYNvP6Rt9ShH+OH8v1wT7xfDvXd7Yj7cX3rOzE3hie8f52pl7CbBBWugx6rm0F4Ge5E8IHq3ZkfpWsUNyI5yl/AANYVv/BQ== santi@LAPTOP-AAU6BJIE
+          - path: /home/azureuser/.ssh/authorized_keys
+            key_data: <your-key-data>
+        network_interfaces: myNIC
+        image:
+          offer: CentOS
+          publisher: OpenLogic
+          sku: '7.5'
+          version: latest

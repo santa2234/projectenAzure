@@ -1,0 +1,56 @@
+# group_vars/dhcp.yml
+# Variables visible to machines part of group dns. See vagrant-groups.yml
+---
+ipv6: fe80:0000:0000:0002::0006/64
+connection: "System eth1"
+rhbase_repositories:
+  - epel-release
+rhbase_firewall_allow_services:
+  - dhcp
+dhcp_global_default_lease_time: 28800   # 8hrs
+dhcp_global_max_lease_time: 43200       # 12 hrs
+dhcp_global_routers: 192.168.1.73
+# PXE-boot server
+dhcp_global_next_server: 192.168.1.133
+# Domain vars
+dhcp_global_domain_name: CORONA2020.local
+dhcp_global_domain_name_servers:
+  - 192.0.2.1
+  - 8.8.8.8
+  - 8.8.4.4
+# Subnetting
+dhcp_subnets:
+  # VLAN 20: servers, not dynamically assigned, PXE server
+  - ip: 192.168.1.128
+    netmask: 255.255.255.248
+    #PXE boot vars: allow pxe + img file that should be taken
+    booting: allow
+    bootp: allow
+    filename: WS2019.img
+  # VLAN 30: hosts, dynamically assigned, PXE windows
+  - ip: 192.168.0.0
+    netmask: 255.255.255.0 #254
+    range_begin: 192.168.0.1
+    range_end: 192.168.0.254
+    #PXE boot vars: allow pxe + img file that should be taken
+    booting: allow
+    bootp: allow
+    filename: W10.img
+  # VLAN 40: guests, dynamically assigned
+  - ip: 192.168.1.0
+    netmask: 255.255.255.128 #126
+    range_begin: 192.168.1.1
+    range_end: 192.168.1.126
+  # VLAN 50 not dynamically assigned
+dhcp6_subnets:
+    # VLAN 30: Hosts, dynamically assigned
+  - ip6: fe80:0000:0000:0003::/64
+    range_begin: fe80:0000:0000:0003:0000:0000:0000:0000
+    range_end: fe80:0000:0000:0003:ffff:ffff:ffff:ffff
+    # VLAN 40: Guests, dynamically assigned
+  - ip6: fe80:0000:0000:0004::/64
+    range_begin: fe80:0000:0000:0004:0000:0000:0000:0000
+    range_end: fe80:0000:0000:0004:ffff:ffff:ffff:ffff
+    # VLAN 20: Servers, not dynamically assigned
+  - ip6: fe80:0000:0000:0002::/64
+    # VLAN 50: Router, not dynamically assigned

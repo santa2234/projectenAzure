@@ -1,0 +1,22 @@
+# group_vars/dns.yml
+# Variables visible to machines part of group mail. See vagrant-groups.yml
+---
+ipv6: fe80:0000:0000:0002::0004/64
+connection: "System eth1"
+rhbase_repositories:
+  - epel-release
+rhbase_users:
+  - name: fleur
+    groups:
+      - users
+    password: ''
+rhbase_firewall_allow_services:
+  - pop3s
+  - imaps
+rhbase_firewall_allow_ports:
+  - 587/tcp
+  - 465/tcp
+  - 110/tcp
+  - 143/tcp
+postfix_myhostname: delta.CORONA2020.local
+postfix_mydomain: CORONA2020.local

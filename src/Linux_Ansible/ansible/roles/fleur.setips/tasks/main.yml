@@ -1,0 +1,16 @@
+- name: command to show device names
+  command: bash -c "nmcli device status"
+  register: devices
+
+- name: show device names
+  debug: var=devices.stdout_lines
+
+- name: modify ipv6
+  command: bash -c "nmcli connection modify '{{connection}}' ipv6.addresses {{ipv6}} ipv6.method manual"
+  register: meh
+
+- name: make sure connection go up automatically
+  command: bash -c "nmcli connection modify '{{connection}}' connection.autoconnect yes"
+
+- name: bring up the connection
+  command: bash -c "nmcli connection up '{{connection}}'"

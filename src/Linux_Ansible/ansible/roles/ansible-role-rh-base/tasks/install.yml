@@ -1,0 +1,289 @@
+# roles/rhbase/tasks/install.yml
+#
+# Install custom repositories and packages. Repositories should be installed
+# using an RPM package. A list of URLs to the RPMs for these repositories
+# should be specified in group_vars or host_vars.
+---
+#- name: enable newest php repos
+#  shell:
+#    cmd: yum-config-manager --enable remi-php73
+#  become: true
+
+#- name: disbale old php repo
+#  shell:
+#    cmd: yum-config-manager --disable remi-php72
+#  become: true
+
+- name: Install | Check minimal value of ‘rhbase_repo_installonly_limit’ (>= 2)
+  debug:
+    msg: >-
+      The value of ‘rhbase_repo_installonly_limit’ should be at least 2,
+      actual value is {{ rhbase_repo_installonly_limit }}.
+  failed_when: rhbase_repo_installonly_limit < 2
+  tags:
+    - rhbase
+    - install
+
+- name: Install | Ensure the machine-ID is available
+  command: systemd-machine-id-setup
+  args:
+    creates: /etc/machine-id
+  tags: rhbase
+
+- name: Install | Ensure basic systemd services are running
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  with_items: "{{ rhbase_systemd_services }}"
+  tags: rhbase
+
+- name: Install | Role/Ansible dependencies
+  package:
+    name: "{{ rhbase_dependencies }}"
+    state: installed
+  tags:
+    - rhbase
+    - install
+
+- name: Install | Package management configuration ({{ rhbase_package_manager }})
+  template:
+    src: "etc_{{ rhbase_package_manager }}.conf.j2"
+    dest: "{{ rhbase_package_manager_configuration }}"
+    owner: santi
+    group: santi
+    mode: 0644
+  tags:
+    - rhbase
+    - install
+
+- name: Install | Ensure specified external repositories are installed
+  package:
+    name: "{{ rhbase_repositories }}"
+    state: installed
+  tags:
+    - rhbase
+    - install
+
+- name: Install | Ensure specified repositories are enabled
+  lineinfile:
+    dest: "/etc/yum.repos.d/{{ item }}.repo"
+    line: 'enabled=1'
+    state: present
+    regexp: '^enabled='
+  with_items: "{{ rhbase_enable_repos }}"
+  tags:
+    - rhbase
+    - install
+
+- name: Install | Ensure specified packages are installed
+  package:
+    name: "{{ rhbase_install_packages }}"
+    state: installed
+  tags:
+    - rhbase
+    - install
+
+- name: Install | Ensure specified packages are NOT installed
+  package:
+    name: "{{ rhbase_remove_packages }}"
+    state: absent
+  tags:
+    - rhbase
+    - install
+
+- name: Install | Ensure all updates are installed
+  package:
+    name: '*'
+    state: latest
+  when: rhbase_update
+  tags:
+    - rhbase
+    - install
+
+- name: domeinMap maken (nodig voor nginx domein)
+  file:
+    path: /var/www/corona2002.local
+    state: directory
+    owner: santi
+    group: wheel
+    mode: 0755
+#/var/www/corona2002.local/drupal
+#- name: HTML map maken in domeinmap (nodig voor drupal installation)
+#  file:
+#    path: /var/www/corona2002.local/drupal
+#    state: directory
+#    owner: santi
+#    group: wheel
+#    mode: 0755
+
+#- name: HTML map maken in domeinmap (nodig voor drupal installation)
+#  file:
+#    path: /var/www/corona2002.local/drupal/sites
+#    state: directory
+#    owner: santi
+#    group: wheel
+#    mode: 0755
+
+#- name: directory map maken in domeinmap (nodig voor drupal installation)
+#  file:
+#    path: /var/www/corona2002.local/drupal/sites/defaults/files
+#    state: directory
+#    owner: santi
+#    group: wheel
+#    mode: 0755
+
+# - name: connect script in drupal plaatsen
+#   copy:
+#     src: files/connect.php
+ #    dest: /var/www/{{ http_host }}/drupal/
+ #    owner: santi
+ #    group: wheel
+ #    mode: 0755
+#- name: HTML map maken in domeinmap (nodig voor drupal installation)
+#  file:
+#    path: /var/www/corona2002.local/drupal/sites/files
+#    state: directory
+#    owner: santi
+#    group: wheel
+#    mode: 0755
+
+#- name: HTML map maken in domeinmap (nodig voor drupal installation)
+#  file:
+#    path: /var/www/corona2002.local/drupal
+#    state: directory
+#    owner: santi
+#    group: wheel
+#    mode: 0755
+
+#https://ftp.drupal.org/files/projects/drupal-${DRUPAL_VERSION}.tar.gz
+- name: Download and unpack drupal
+  unarchive:
+    src: https://ftp.drupal.org/files/projects/drupal-8.7.3.tar.gz
+    dest: "/var/www/{{ http_host }}/"
+    remote_src: yes
+#    creates: "/var/www/{{ http_host }}/drupal"
+  notify: restart_nginx
+
+- name: juiste permissies geven aan drupal
+  file:
+    path: /var/www/{{ http_host }}/drupal-8.7.3
+    owner: santi
+    group: wheel
+    mode: 0755
+
+- name: php group veranderen naar nginx
+  file:
+    path: /var/lib/php
+    owner: root
+    group: nginx
+    mode: 0755
+
+- name: juiste permissies geven aan drupal index pagina
+  file:
+    path: /var/www/{{ http_host }}/drupal-8.7.3/index.php
+    owner: santi
+    group: wheel
+    mode: 0755
+# 
+- name: default settings kopiëren naar settings.php
+  copy:
+    src: /var/www/{{ http_host }}/drupal-8.7.3/sites/default/default.settings.php
+    dest: /var/www/{{ http_host }}/drupal-8.7.3/sites/default/settings.php
+    owner: santi
+    group: wheel
+    mode: 0755
+#- name: connect script in drupal plaatsen
+#  copy:
+#    src: files/connect.php
+#    dest: /var/www/{{ http_host }}/drupal/
+#    owner: santi
+#    group: wheelvag
+#    mode: 0755
+- name: connect script in drupal plaatsen
+  copy:
+    src: files/info.php
+    dest: /var/www/{{ http_host }}/drupal-8.7.3/
+    owner: santi
+    group: wheel
+    mode: 0755
+
+- name: verander permissies van drupal
+  file:
+    path: /var/www/{{ http_host }}/drupal-8.7.3
+    owner: santi
+    group: wheel
+    mode: 0755
+
+#permissies 757 maken van /sites, /sites/default/sites/,  /sites/default/settings.php
+- name: verander permissies van drupal
+  file:
+    path: /var/www/{{ http_host }}/drupal-8.7.3/sites
+    owner: santi
+    group: wheel
+    mode: 0757
+
+- name: verander permissies van drupal
+  file:
+    path: /var/www/{{ http_host }}/drupal-8.7.3/sites/default
+    owner: santi
+    group: wheel
+    mode: 0757
+
+- name: verander permissies van drupal
+  file:
+    path: /var/www/{{ http_host }}/drupal-8.7.3/sites/default/settings.php
+    owner: santi
+    group: wheel
+    mode: 0757
+
+# firewall poort 5432 nog permanent toevoegen
+
+- name: This command will change the working directory to somedir/
+  shell:
+    cmd: chcon -R -t httpd_sys_content_rw_t /var/www/corona2002.local/drupal-8.7.3/sites/
+
+- name: This command will change the working directory to somedir/
+  shell:
+    cmd: chcon -R -t httpd_sys_content_rw_t /var/www/corona2002.local/drupal-8.7.3/sites/default
+
+- name: This command will change the working directory to somedir/
+  shell:
+    cmd: chcon -R -t httpd_sys_content_rw_t /var/www/corona2002.local/drupal-8.7.3/sites/default/settings.php
+
+- name: This command will change the working directory to somedir/
+  shell:
+    cmd: setsebool -P httpd_can_network_connect_db 1
+
+
+
+
+#- name: selinux in orde zetten voor drupal
+#  shell:
+#    cmd: chcon -t httpd_sys_content_rw_t sites/default/
+
+#- name: selinux in orde zetten voor drupal 2
+#  shell:
+#    cmd: chcon -t httpd_sys_content_rw_t sites/default/settings.php
+
+
+#- name: connect script in drupal plaatsen
+#  copy:
+#    src: files/php.ini
+#    dest: /etc/
+#    owner: santi
+#    group: wheel
+#    mode: 0755
+
+#- name: kopieren directories voor drupal compatibiliteit
+#  copy:
+#    src: files/pg4wp
+#    dest: /var/www/{{ http_host }}/drupal/
+#    owner: santi
+#    group: santi
+#    tags: [ drupal ]
+#- name: Download and Extract WorPress
+#  unarchive:
+#    src: https://drupal.org/latest.tar.gz
+#    dest: /var/www/corona2002.local/html
+#    remote_src: yes
